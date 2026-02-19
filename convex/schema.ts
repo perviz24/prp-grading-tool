@@ -55,12 +55,18 @@ export default defineSchema({
     revisedOct: v.optional(v.number()),
     // Step 5: Actual OCT + EZ line status
     actualOct: v.number(),
-    ezStatus: v.union(
-      v.literal("Intact"),
-      v.literal("Disrupted"),
-      v.literal("Not visible")
+    // Legacy field — old records used boolean; kept optional for backward compat
+    ezIntact: v.optional(v.boolean()),
+    ezStatus: v.optional(
+      v.union(
+        v.literal("Intact"),
+        v.literal("Disrupted"),
+        v.literal("Not visible")
+      )
     ),
-    ezConfidence: v.union(v.literal("Low"), v.literal("Medium"), v.literal("High")),
+    ezConfidence: v.optional(
+      v.union(v.literal("Low"), v.literal("Medium"), v.literal("High"))
+    ),
     // Images — actual patient photos (storage IDs)
     fundusImageId: v.optional(v.id("_storage")),
     afImageId: v.optional(v.id("_storage")),

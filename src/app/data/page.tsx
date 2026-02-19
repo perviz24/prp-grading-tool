@@ -78,7 +78,7 @@ export default function DataPage() {
                   exportCsv(
                     filtered.map((s) => ({
                       ...s,
-                      ezStatus: s.ezStatus ?? "Intact",
+                      ezStatus: s.ezStatus ?? (s.ezIntact === false ? "Disrupted" : "Intact"),
                       ezConfidence: s.ezConfidence,
                     }))
                   )
@@ -194,7 +194,7 @@ export default function DataPage() {
                           {scar.actualOct}
                         </TableCell>
                         <TableCell className="text-center text-xs">
-                          {scar.ezStatus ?? "—"}
+                          {scar.ezStatus ?? (scar.ezIntact === false ? "Disrupted" : scar.ezIntact === true ? "Intact" : "—")}
                         </TableCell>
                         <TableCell className="text-center">
                           <Badge variant={acc.variant} className="text-xs">

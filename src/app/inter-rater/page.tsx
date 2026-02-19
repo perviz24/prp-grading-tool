@@ -65,7 +65,14 @@ export default function InterRaterPage() {
 
           {/* Stats */}
           {!isLoading && graders.length >= 2 && (scars?.length ?? 0) > 0 && (
-            <InterRaterStats scars={scars} graderIds={graders} />
+            <InterRaterStats
+              scars={scars.map((s) => ({
+                ...s,
+                // Backward compat: old records have ezIntact, new ones have ezStatus
+                ezStatus: s.ezStatus ?? (s.ezIntact === false ? "Disrupted" : "Intact"),
+              }))}
+              graderIds={graders}
+            />
           )}
         </div>
       </main>

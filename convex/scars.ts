@@ -169,6 +169,7 @@ export const listAllForInterRater = query({
           afGrade: scar.afGrade,
           actualOct: scar.actualOct,
           ezStatus: scar.ezStatus,
+          ezIntact: scar.ezIntact,
         };
       })
     );

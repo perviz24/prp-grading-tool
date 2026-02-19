@@ -16,15 +16,19 @@ function toScarRecord(s: {
   afGrade: number;
   revisedOct?: number;
   actualOct: number;
-  ezStatus: string;
+  ezStatus?: string;
+  ezIntact?: boolean;
 }): ScarRecord {
+  // Backward compat: old records have ezIntact boolean, new ones have ezStatus string
+  const ezStatus =
+    s.ezStatus ?? (s.ezIntact === false ? "Disrupted" : "Intact");
   return {
     fundusGrade: s.fundusGrade,
     predictedOct: s.predictedOct,
     afGrade: s.afGrade,
     revisedOct: s.revisedOct,
     actualOct: s.actualOct,
-    ezStatus: s.ezStatus,
+    ezStatus,
   };
 }
 
