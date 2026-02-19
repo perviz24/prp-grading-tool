@@ -22,7 +22,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Download } from "lucide-react";
 import { getTimeCategory } from "@/lib/types";
+import { exportCsv } from "@/lib/csv-export";
 
 export default function DataPage() {
   const scars = useQuery(api.scars.listAllWithPatients);
@@ -56,16 +59,27 @@ export default function DataPage() {
                   : `${filtered.length} graded scars`}
               </p>
             </div>
-            <Select value={filterGroup} onValueChange={setFilterGroup}>
-              <SelectTrigger className="w-[200px]">
-                <SelectValue placeholder="Filter by group" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All groups</SelectItem>
-                <SelectItem value="A-Modern">A-Modern</SelectItem>
-                <SelectItem value="B-Konventionell">B-Konventionell</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="flex items-center gap-3">
+              <Select value={filterGroup} onValueChange={setFilterGroup}>
+                <SelectTrigger className="w-[200px]">
+                  <SelectValue placeholder="Filter by group" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All groups</SelectItem>
+                  <SelectItem value="A-Modern">A-Modern</SelectItem>
+                  <SelectItem value="B-Konventionell">B-Konventionell</SelectItem>
+                </SelectContent>
+              </Select>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={filtered.length === 0}
+                onClick={() => exportCsv(filtered)}
+              >
+                <Download className="mr-2 h-4 w-4" />
+                Export CSV
+              </Button>
+            </div>
           </div>
 
           {/* Loading state */}
