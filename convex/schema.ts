@@ -5,20 +5,20 @@ export default defineSchema({
   patients: defineTable({
     userId: v.string(),
     patientCode: v.string(),
-    laserGroup: v.union(v.literal("A-Modern"), v.literal("B-Konventionell")),
-    laserApparatus: v.union(
+    laserGroup: v.optional(v.union(v.literal("A-Modern"), v.literal("B-Konventionell"))),
+    laserApparatus: v.optional(v.union(
       v.literal("Valon"),
       v.literal("Navilas"),
       v.literal("Argon"),
       v.literal("Other")
-    ),
+    )),
     power_mW: v.optional(v.number()),
     spotSize_um: v.optional(v.number()),
     duration_ms: v.optional(v.number()),
-    pattern: v.union(v.literal("Single"), v.literal("Pattern")),
+    pattern: v.optional(v.union(v.literal("Single"), v.literal("Pattern"))),
     wavelength_nm: v.optional(v.number()),
     numBurns: v.optional(v.number()),
-    timeSinceTreatmentYears: v.number(),
+    timeSinceTreatmentYears: v.optional(v.number()),
     createdAt: v.number(),
   }).index("by_user", ["userId"]),
 
