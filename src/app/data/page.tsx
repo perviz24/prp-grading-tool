@@ -48,7 +48,7 @@ export default function DataPage() {
       <Header />
       <main className="flex-1">
         <div className="mx-auto max-w-7xl px-4 py-8">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h1 className="text-2xl font-semibold tracking-tight">
                 Data Table
@@ -61,7 +61,7 @@ export default function DataPage() {
             </div>
             <div className="flex items-center gap-3">
               <Select value={filterGroup} onValueChange={setFilterGroup}>
-                <SelectTrigger className="w-[200px]">
+                <SelectTrigger className="w-[160px] sm:w-[200px]">
                   <SelectValue placeholder="Filter by group" />
                 </SelectTrigger>
                 <SelectContent>
