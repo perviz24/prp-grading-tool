@@ -15,6 +15,7 @@ import {
 const navItems = [
   { href: "/", label: "Home" },
   { href: "/grade", label: "Grade" },
+  { href: "/references", label: "References" },
   { href: "/data", label: "Data" },
   { href: "/statistics", label: "Statistics" },
   { href: "/inter-rater", label: "Inter-Rater" },
