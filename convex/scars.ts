@@ -57,6 +57,10 @@ export const create = mutation({
     revisedOct: v.optional(v.number()),
     actualOct: v.number(),
     ezIntact: v.boolean(),
+    // Images — actual patient photos
+    fundusImageId: v.optional(v.id("_storage")),
+    afImageId: v.optional(v.id("_storage")),
+    octImageId: v.optional(v.id("_storage")),
     comment: v.optional(v.string()),
     stepTimestamps: v.object({
       fundusStart: v.optional(v.number()),

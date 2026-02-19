@@ -56,6 +56,10 @@ export default defineSchema({
     // Step 5: Actual OCT + EZ intact
     actualOct: v.number(),
     ezIntact: v.boolean(),
+    // Images — actual patient photos (storage IDs)
+    fundusImageId: v.optional(v.id("_storage")),
+    afImageId: v.optional(v.id("_storage")),
+    octImageId: v.optional(v.id("_storage")),
     // Metadata
     comment: v.optional(v.string()),
     stepTimestamps: v.object({
