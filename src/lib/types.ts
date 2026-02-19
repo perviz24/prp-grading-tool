@@ -59,17 +59,17 @@ export const FUNDUS_GRADES = {
 } as const;
 
 export const OCT_GRADES = {
-  1: { label: "Grade 1", description: "Superficial — inner retina only" },
+  1: { label: "Grade 1", description: "Superficial — RPE only" },
   2: { label: "Grade 2", description: "Partial — into outer nuclear layer" },
-  3: { label: "Grade 3", description: "Full — reaching RPE" },
-  4: { label: "Grade 4", description: "Deep — through RPE, choroidal damage" },
+  3: { label: "Grade 3", description: "Full — reaching inner nuclear layer" },
+  4: { label: "Grade 4", description: "Deep — full thickness, RPE to RNFL" },
 } as const;
 
 export const AF_GRADES = {
-  1: { label: "Grade 1", description: "Minimal hypo-AF" },
-  2: { label: "Grade 2", description: "Moderate hypo-AF" },
-  3: { label: "Grade 3", description: "Marked hypo-AF" },
-  4: { label: "Grade 4", description: "Complete hypo-AF with hyper-AF ring" },
+  1: { label: "Grade 1", description: "Normal AF" },
+  2: { label: "Grade 2", description: "Hypo-AF" },
+  3: { label: "Grade 3", description: "Hyper-AF" },
+  4: { label: "Grade 4", description: "Hypo-AF surround with hyper-AF centre" },
 } as const;
 
 // Compute time category based on 2-year cutoff
