@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { ImagePasteUpload } from "@/components/image-paste-upload";
-import { ReferenceImages } from "@/components/reference-images";
+import { ReferenceGallery } from "@/components/reference-gallery";
 import {
   type Quadrant,
   type Zone,
@@ -95,7 +95,7 @@ function ReferenceImageGrid({
       <Label className="text-sm">Reference Photos</Label>
       <div className="grid gap-3 sm:grid-cols-2">
         {Object.entries(grades).map(([num, grade]) => (
-          <ReferenceImages
+          <ReferenceGallery
             key={num}
             modality={modality}
             gradeNumber={parseInt(num)}
