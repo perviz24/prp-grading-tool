@@ -171,6 +171,70 @@ export function wilcoxonSignedRank(
   return { w: Math.round(w), z, n };
 }
 
+// Weighted Kappa (linear weights) for inter-rater agreement on ordinal scales
+// Returns kappa value and interpretation label
+export function weightedKappa(
+  rater1: number[],
+  rater2: number[],
+  numCategories: number
+): { kappa: number; label: string } | null {
+  if (rater1.length !== rater2.length || rater1.length < 2) return null;
+  const n = rater1.length;
+  const k = numCategories;
+
+  // Build observed confusion matrix
+  const observed: number[][] = Array.from({ length: k }, () =>
+    new Array(k).fill(0)
+  );
+  for (let i = 0; i < n; i++) {
+    const r1 = rater1[i] - 1; // convert 1-based to 0-based
+    const r2 = rater2[i] - 1;
+    if (r1 >= 0 && r1 < k && r2 >= 0 && r2 < k) {
+      observed[r1][r2]++;
+    }
+  }
+
+  // Row and column marginals
+  const rowSums = observed.map((row) => row.reduce((a, b) => a + b, 0));
+  const colSums = Array.from({ length: k }, (_, j) =>
+    observed.reduce((sum, row) => sum + row[j], 0)
+  );
+
+  // Linear weight matrix: w(i,j) = 1 - |i-j| / (k-1)
+  const weight = (i: number, j: number) =>
+    k > 1 ? 1 - Math.abs(i - j) / (k - 1) : 1;
+
+  // Weighted observed agreement
+  let po = 0;
+  for (let i = 0; i < k; i++) {
+    for (let j = 0; j < k; j++) {
+      po += weight(i, j) * (observed[i][j] / n);
+    }
+  }
+
+  // Weighted expected agreement (by chance)
+  let pe = 0;
+  for (let i = 0; i < k; i++) {
+    for (let j = 0; j < k; j++) {
+      pe += weight(i, j) * ((rowSums[i] / n) * (colSums[j] / n));
+    }
+  }
+
+  if (pe >= 1) return { kappa: 1, label: "Perfect" };
+  const kappa = Math.round(((po - pe) / (1 - pe)) * 1000) / 1000;
+
+  // Landis & Koch interpretation
+  let label: string;
+  if (kappa >= 0.81) label = "Almost perfect";
+  else if (kappa >= 0.61) label = "Substantial";
+  else if (kappa >= 0.41) label = "Moderate";
+  else if (kappa >= 0.21) label = "Fair";
+  else if (kappa >= 0) label = "Slight";
+  else label = "Poor";
+
+  return { kappa, label };
+}
+
 // EZ intact by OCT grade
 export function ezByOctGrade(data: ScarRecord[]) {
   const grades = [1, 2, 3, 4];

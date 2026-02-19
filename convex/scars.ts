@@ -112,6 +112,61 @@ export const listAllWithPatients = query({
   },
 });
 
+// Inter-rater: list all scars for a patient by ALL graders
+export const listByPatientAllGraders = query({
+  args: { patientId: v.id("patients") },
+  handler: async (ctx, { patientId }) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return [];
+    return ctx.db
+      .query("scars")
+      .withIndex("by_patient", (q) => q.eq("patientId", patientId))
+      .collect();
+  },
+});
+
+// Inter-rater: list distinct grader IDs across all scars
+export const listGraders = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return [];
+    // Get all scars (not filtered by user — inter-rater needs all graders)
+    const allScars = await ctx.db.query("scars").collect();
+    const graderIds = [...new Set(allScars.map((s) => s.graderId))];
+    return graderIds;
+  },
+});
+
+// Inter-rater: list all scars grouped by scarCode (for pair matching)
+export const listAllForInterRater = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return [];
+    // Return all non-regrade scars with patient info
+    const allScars = await ctx.db.query("scars").collect();
+    const originals = allScars.filter((s) => !s.isRegradeOf);
+    const results = await Promise.all(
+      originals.map(async (scar) => {
+        const patient = await ctx.db.get(scar.patientId);
+        return {
+          _id: scar._id,
+          scarCode: scar.scarCode,
+          graderId: scar.graderId,
+          patientCode: patient?.patientCode ?? "Unknown",
+          fundusGrade: scar.fundusGrade,
+          predictedOct: scar.predictedOct,
+          afGrade: scar.afGrade,
+          actualOct: scar.actualOct,
+          ezIntact: scar.ezIntact,
+        };
+      })
+    );
+    return results;
+  },
+});
+
 export const nextScarCode = query({
   args: { patientId: v.id("patients") },
   handler: async (ctx, { patientId }) => {
