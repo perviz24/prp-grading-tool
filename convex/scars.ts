@@ -85,6 +85,33 @@ export const create = mutation({
   },
 });
 
+export const listAllWithPatients = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return [];
+    const userId = identity.subject;
+    const scars = await ctx.db
+      .query("scars")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .order("desc")
+      .collect();
+    // Join with patient data
+    const results = await Promise.all(
+      scars.map(async (scar) => {
+        const patient = await ctx.db.get(scar.patientId);
+        return {
+          ...scar,
+          patientCode: patient?.patientCode ?? "Unknown",
+          laserGroup: patient?.laserGroup ?? "Unknown",
+          timeSinceTreatmentYears: patient?.timeSinceTreatmentYears ?? 0,
+        };
+      })
+    );
+    return results;
+  },
+});
+
 export const nextScarCode = query({
   args: { patientId: v.id("patients") },
   handler: async (ctx, { patientId }) => {
