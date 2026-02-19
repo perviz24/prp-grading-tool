@@ -65,7 +65,9 @@ export default function PatientGradePage() {
     );
   }
 
-  const timeCategory = getTimeCategory(patient.timeSinceTreatmentYears);
+  const timeCategory = patient.timeSinceTreatmentYears != null
+    ? getTimeCategory(patient.timeSinceTreatmentYears)
+    : null;
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -87,18 +89,31 @@ export default function PatientGradePage() {
                 {patient.patientCode}
               </h1>
               <div className="flex items-center gap-2">
-                <Badge variant="outline">{patient.laserGroup}</Badge>
-                <Badge variant="secondary">{patient.laserApparatus}</Badge>
-                <Badge
-                  variant={
-                    timeCategory === "Recent ≤2yr" ? "default" : "secondary"
-                  }
-                >
-                  {timeCategory}
-                </Badge>
+                {patient.laserGroup && (
+                  <Badge variant="outline">{patient.laserGroup}</Badge>
+                )}
+                {patient.laserApparatus && (
+                  <Badge variant="secondary">{patient.laserApparatus}</Badge>
+                )}
+                {timeCategory && (
+                  <Badge
+                    variant={
+                      timeCategory === "Recent ≤2yr" ? "default" : "secondary"
+                    }
+                  >
+                    {timeCategory}
+                  </Badge>
+                )}
+                {(!patient.laserGroup || !patient.laserApparatus || patient.timeSinceTreatmentYears == null) && (
+                  <Badge variant="destructive" className="text-xs">
+                    Incomplete
+                  </Badge>
+                )}
               </div>
               <p className="text-sm text-muted-foreground">
-                {patient.timeSinceTreatmentYears}yr
+                {patient.timeSinceTreatmentYears != null
+                  ? `${patient.timeSinceTreatmentYears}yr`
+                  : "Time not set"}
                 {patient.power_mW ? ` • ${patient.power_mW}mW` : ""}
                 {patient.spotSize_um ? ` • ${patient.spotSize_um}μm` : ""}
                 {patient.duration_ms ? ` • ${patient.duration_ms}ms` : ""}

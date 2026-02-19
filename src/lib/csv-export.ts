@@ -3,8 +3,8 @@
 interface ScarRow {
   scarCode: string;
   patientCode: string;
-  laserGroup: string;
-  timeSinceTreatmentYears: number;
+  laserGroup?: string;
+  timeSinceTreatmentYears?: number;
   quadrant: string;
   zone: string;
   fundusGrade: number;
@@ -68,10 +68,10 @@ export function exportCsv(rows: ScarRow[]) {
   const csvRows = rows.map((r) => [
     r.scarCode,
     r.patientCode,
-    r.laserGroup,
-    groupCode[r.laserGroup] ?? "",
-    r.timeSinceTreatmentYears,
-    r.timeSinceTreatmentYears <= 2 ? 1 : 2,
+    r.laserGroup ?? "",
+    r.laserGroup ? (groupCode[r.laserGroup] ?? "") : "",
+    r.timeSinceTreatmentYears ?? "",
+    r.timeSinceTreatmentYears != null ? (r.timeSinceTreatmentYears <= 2 ? 1 : 2) : "",
     r.quadrant,
     quadrantCode[r.quadrant] ?? "",
     r.zone,

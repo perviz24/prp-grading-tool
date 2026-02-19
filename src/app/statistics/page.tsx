@@ -39,6 +39,7 @@ export default function StatisticsPage() {
   const data = allScars.map(toScarRecord);
 
   // Group by laser group for Mann-Whitney comparisons
+  // Patients without laserGroup are excluded from group comparisons
   const groupA = allScars
     .filter((s) => s.laserGroup === "A-Modern")
     .map(toScarRecord);

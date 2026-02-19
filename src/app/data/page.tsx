@@ -33,7 +33,11 @@ export default function DataPage() {
 
   const filtered =
     scars?.filter((s) =>
-      filterGroup === "all" ? true : s.laserGroup === filterGroup
+      filterGroup === "all"
+        ? true
+        : filterGroup === "unassigned"
+          ? !s.laserGroup || s.laserGroup === "Unknown"
+          : s.laserGroup === filterGroup
     ) ?? [];
 
   const predictionAccuracy = (predicted: number, actual: number) => {
@@ -68,6 +72,7 @@ export default function DataPage() {
                   <SelectItem value="all">All groups</SelectItem>
                   <SelectItem value="A-Modern">A-Modern</SelectItem>
                   <SelectItem value="B-Konventionell">B-Konventionell</SelectItem>
+                  <SelectItem value="unassigned">Unassigned</SelectItem>
                 </SelectContent>
               </Select>
               <Button
@@ -149,9 +154,10 @@ export default function DataPage() {
                       scar.predictedOct,
                       scar.actualOct
                     );
-                    const timeCategory = getTimeCategory(
-                      scar.timeSinceTreatmentYears
-                    );
+                    const timeCategory =
+                      scar.timeSinceTreatmentYears != null && scar.timeSinceTreatmentYears > 0
+                        ? getTimeCategory(scar.timeSinceTreatmentYears)
+                        : null;
                     return (
                       <TableRow key={scar._id}>
                         <TableCell className="font-mono text-sm">
@@ -161,19 +167,23 @@ export default function DataPage() {
                           {scar.patientCode}
                         </TableCell>
                         <TableCell>
-                          <Badge
-                            variant={
-                              scar.laserGroup === "A-Modern"
-                                ? "default"
-                                : "secondary"
-                            }
-                            className="text-xs"
-                          >
-                            {scar.laserGroup === "A-Modern" ? "A" : "B"}
-                          </Badge>
+                          {scar.laserGroup && scar.laserGroup !== "Unknown" ? (
+                            <Badge
+                              variant={
+                                scar.laserGroup === "A-Modern"
+                                  ? "default"
+                                  : "secondary"
+                              }
+                              className="text-xs"
+                            >
+                              {scar.laserGroup === "A-Modern" ? "A" : "B"}
+                            </Badge>
+                          ) : (
+                            <span className="text-xs text-muted-foreground">—</span>
+                          )}
                         </TableCell>
                         <TableCell className="text-xs">
-                          {timeCategory}
+                          {timeCategory ?? "—"}
                         </TableCell>
                         <TableCell className="text-xs">
                           {scar.quadrant} / {scar.zone}

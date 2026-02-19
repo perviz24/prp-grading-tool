@@ -11,15 +11,15 @@ export type EZStatus = "Intact" | "Disrupted" | "Not visible";
 
 export interface PatientData {
   patientCode: string;
-  laserGroup: LaserGroup;
-  laserApparatus: LaserApparatus;
+  laserGroup?: LaserGroup;
+  laserApparatus?: LaserApparatus;
   power_mW?: number;
   spotSize_um?: number;
   duration_ms?: number;
-  pattern: LaserPattern;
+  pattern?: LaserPattern;
   wavelength_nm?: number;
   numBurns?: number;
-  timeSinceTreatmentYears: number;
+  timeSinceTreatmentYears?: number;
 }
 
 export interface ScarData {

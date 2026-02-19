@@ -20,7 +20,10 @@ export function PatientList({ patients }: PatientListProps) {
       </CardHeader>
       <CardContent className="space-y-3">
         {patients.map((p) => {
-          const timeCategory = getTimeCategory(p.timeSinceTreatmentYears);
+          const timeCategory = p.timeSinceTreatmentYears != null
+            ? getTimeCategory(p.timeSinceTreatmentYears)
+            : null;
+          const isIncomplete = !p.laserGroup || !p.laserApparatus || p.timeSinceTreatmentYears == null;
           return (
             <div
               key={p._id}
@@ -29,18 +32,31 @@ export function PatientList({ patients }: PatientListProps) {
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
                   <span className="font-medium">{p.patientCode}</span>
-                  <Badge variant="outline">{p.laserGroup}</Badge>
-                  <Badge variant="secondary">{p.laserApparatus}</Badge>
-                  <Badge
-                    variant={
-                      timeCategory === "Recent ≤2yr" ? "default" : "secondary"
-                    }
-                  >
-                    {timeCategory}
-                  </Badge>
+                  {p.laserGroup && (
+                    <Badge variant="outline">{p.laserGroup}</Badge>
+                  )}
+                  {p.laserApparatus && (
+                    <Badge variant="secondary">{p.laserApparatus}</Badge>
+                  )}
+                  {timeCategory && (
+                    <Badge
+                      variant={
+                        timeCategory === "Recent ≤2yr" ? "default" : "secondary"
+                      }
+                    >
+                      {timeCategory}
+                    </Badge>
+                  )}
+                  {isIncomplete && (
+                    <Badge variant="destructive" className="text-xs">
+                      Incomplete
+                    </Badge>
+                  )}
                 </div>
                 <div className="text-sm text-muted-foreground">
-                  {p.timeSinceTreatmentYears}yr
+                  {p.timeSinceTreatmentYears != null
+                    ? `${p.timeSinceTreatmentYears}yr`
+                    : "Time not set"}
                   {p.power_mW ? ` • ${p.power_mW}mW` : ""}
                   {p.spotSize_um ? ` • ${p.spotSize_um}μm` : ""}
                   {p.duration_ms ? ` • ${p.duration_ms}ms` : ""}

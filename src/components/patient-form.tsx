@@ -31,10 +31,10 @@ interface PatientFormProps {
 export function PatientForm({ nextCode }: PatientFormProps) {
   const createPatient = useMutation(api.patients.create);
 
-  const [laserGroup, setLaserGroup] = useState<LaserGroup>("A-Modern");
+  const [laserGroup, setLaserGroup] = useState<LaserGroup | "">("");
   const [laserApparatus, setLaserApparatus] =
-    useState<LaserApparatus>("Valon");
-  const [pattern, setPattern] = useState<LaserPattern>("Single");
+    useState<LaserApparatus | "">("");
+  const [pattern, setPattern] = useState<LaserPattern | "">("");
   const [power, setPower] = useState("");
   const [spotSize, setSpotSize] = useState("");
   const [duration, setDuration] = useState("");
@@ -43,28 +43,30 @@ export function PatientForm({ nextCode }: PatientFormProps) {
   const [timeSince, setTimeSince] = useState("");
   const [saving, setSaving] = useState(false);
 
-  function handleGroupChange(group: LaserGroup) {
+  function handleGroupChange(group: LaserGroup | "") {
     setLaserGroup(group);
     if (group === "A-Modern") {
       setLaserApparatus("Valon");
-    } else {
+    } else if (group === "B-Konventionell") {
       setLaserApparatus("Argon");
     }
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const years = parseFloat(timeSince);
-    if (isNaN(years) || years < 0) return;
+    const years = timeSince ? parseFloat(timeSince) : undefined;
+    if (years !== undefined && (isNaN(years) || years < 0)) return;
 
     setSaving(true);
     try {
       await createPatient({
         patientCode: nextCode,
-        laserGroup,
-        laserApparatus,
-        pattern,
-        timeSinceTreatmentYears: years,
+        ...(laserGroup ? { laserGroup: laserGroup as LaserGroup } : {}),
+        ...(laserApparatus
+          ? { laserApparatus: laserApparatus as LaserApparatus }
+          : {}),
+        ...(pattern ? { pattern: pattern as LaserPattern } : {}),
+        ...(years !== undefined ? { timeSinceTreatmentYears: years } : {}),
         ...(power ? { power_mW: parseFloat(power) } : {}),
         ...(spotSize ? { spotSize_um: parseFloat(spotSize) } : {}),
         ...(duration ? { duration_ms: parseFloat(duration) } : {}),
@@ -73,6 +75,9 @@ export function PatientForm({ nextCode }: PatientFormProps) {
       });
       toast.success(`Patient ${nextCode} created`);
       // Reset form
+      setLaserGroup("");
+      setLaserApparatus("");
+      setPattern("");
       setPower("");
       setSpotSize("");
       setDuration("");
@@ -101,13 +106,16 @@ export function PatientForm({ nextCode }: PatientFormProps) {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Laser Group & Apparatus */}
+          {/* Laser Group & Apparatus (optional) */}
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label>Laser Group</Label>
-              <Select value={laserGroup} onValueChange={handleGroupChange}>
+              <Label>Laser Group (optional)</Label>
+              <Select
+                value={laserGroup || undefined}
+                onValueChange={handleGroupChange}
+              >
                 <SelectTrigger>
-                  <SelectValue />
+                  <SelectValue placeholder="Select group..." />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="A-Modern">A — Modern</SelectItem>
@@ -118,15 +126,15 @@ export function PatientForm({ nextCode }: PatientFormProps) {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label>Laser Apparatus</Label>
+              <Label>Laser Apparatus (optional)</Label>
               <Select
-                value={laserApparatus}
+                value={laserApparatus || undefined}
                 onValueChange={(v) =>
                   setLaserApparatus(v as LaserApparatus)
                 }
               >
                 <SelectTrigger>
-                  <SelectValue />
+                  <SelectValue placeholder="Select apparatus..." />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Valon">Valon</SelectItem>
@@ -189,11 +197,11 @@ export function PatientForm({ nextCode }: PatientFormProps) {
               <div className="space-y-2">
                 <Label>Pattern</Label>
                 <Select
-                  value={pattern}
+                  value={pattern || undefined}
                   onValueChange={(v) => setPattern(v as LaserPattern)}
                 >
                   <SelectTrigger>
-                    <SelectValue />
+                    <SelectValue placeholder="Select..." />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="Single">Single</SelectItem>
@@ -220,7 +228,7 @@ export function PatientForm({ nextCode }: PatientFormProps) {
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="timeSince">
-                Time Since Treatment (years)
+                Time Since Treatment (years, optional)
               </Label>
               <Input
                 id="timeSince"
@@ -230,7 +238,6 @@ export function PatientForm({ nextCode }: PatientFormProps) {
                 placeholder="e.g. 5"
                 value={timeSince}
                 onChange={(e) => setTimeSince(e.target.value)}
-                required
               />
             </div>
             <div className="flex items-end">
