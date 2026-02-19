@@ -6,6 +6,11 @@ import { Eye, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
+import {
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from "@clerk/nextjs";
 
 const navItems = [
   { href: "/", label: "Home" },
@@ -64,12 +69,17 @@ export function Header() {
           ))}
         </nav>
 
-        {/* Auth placeholder — will be replaced in Feature 2 */}
+        {/* Auth — shows UserButton when signed in, Sign in link when signed out */}
         <div className="ml-auto flex items-center gap-2">
           <div className="hidden md:block">
-            <Button variant="outline" size="sm" asChild>
-              <Link href="/sign-in">Sign in</Link>
-            </Button>
+            <SignedOut>
+              <Button variant="outline" size="sm" asChild>
+                <Link href="/sign-in">Sign in</Link>
+              </Button>
+            </SignedOut>
+            <SignedIn>
+              <UserButton afterSignOutUrl="/" />
+            </SignedIn>
           </div>
 
           {/* Mobile menu */}
