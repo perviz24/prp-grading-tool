@@ -10,8 +10,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowLeft, Plus } from "lucide-react";
+import { ArrowLeft, Pencil, Plus } from "lucide-react";
 import { getTimeCategory } from "@/lib/types";
+import { PatientEditDialog } from "@/components/patient-edit-dialog";
 import { useState } from "react";
 import type { Id } from "../../../../convex/_generated/dataModel";
 
@@ -25,6 +26,7 @@ export default function PatientGradePage() {
   const nextScarCode = useQuery(api.scars.nextScarCode, { patientId });
 
   const [isGrading, setIsGrading] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   // Loading state
   if (patient === undefined) {
@@ -85,9 +87,19 @@ export default function PatientGradePage() {
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 All patients
               </Button>
-              <h1 className="text-2xl font-semibold tracking-tight">
-                {patient.patientCode}
-              </h1>
+              <div className="flex items-center gap-3">
+                <h1 className="text-2xl font-semibold tracking-tight">
+                  {patient.patientCode}
+                </h1>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsEditing(true)}
+                >
+                  <Pencil className="mr-1.5 h-3.5 w-3.5" />
+                  Edit
+                </Button>
+              </div>
               <div className="flex items-center gap-2">
                 {patient.laserGroup && (
                   <Badge variant="outline">{patient.laserGroup}</Badge>
@@ -121,6 +133,14 @@ export default function PatientGradePage() {
               </p>
             </div>
           </div>
+
+          {/* Edit patient dialog */}
+          <PatientEditDialog
+            open={isEditing}
+            onOpenChange={setIsEditing}
+            patientId={patientId}
+            patient={patient}
+          />
 
           {/* Grading wizard or new scar button */}
           {isGrading && nextScarCode ? (
