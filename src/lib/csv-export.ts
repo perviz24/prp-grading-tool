@@ -14,7 +14,8 @@ interface ScarRow {
   afConfidence?: string;
   revisedOct?: number;
   actualOct: number;
-  ezIntact: boolean;
+  ezStatus: string;
+  ezConfidence?: string;
   graderId: string;
   isRegradeOf?: string;
   createdAt: number;
@@ -53,7 +54,9 @@ const headers = [
   "af_confidence_num",
   "revised_oct",
   "actual_oct",
-  "ez_intact",
+  "ez_status",
+  "ez_confidence",
+  "ez_confidence_num",
   "prediction_diff",
   "prediction_exact",
   "grader_id",
@@ -82,7 +85,9 @@ export function exportCsv(rows: ScarRow[]) {
     r.afConfidence ? (confCode[r.afConfidence] ?? "") : "",
     r.revisedOct ?? "",
     r.actualOct,
-    r.ezIntact ? 1 : 0,
+    r.ezStatus,
+    r.ezConfidence ?? "",
+    r.ezConfidence ? (confCode[r.ezConfidence] ?? "") : "",
     r.predictedOct - r.actualOct,
     r.predictedOct === r.actualOct ? 1 : 0,
     r.graderId,

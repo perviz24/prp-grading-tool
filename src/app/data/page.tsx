@@ -74,7 +74,15 @@ export default function DataPage() {
                 variant="outline"
                 size="sm"
                 disabled={filtered.length === 0}
-                onClick={() => exportCsv(filtered)}
+                onClick={() =>
+                  exportCsv(
+                    filtered.map((s) => ({
+                      ...s,
+                      ezStatus: s.ezStatus ?? "Intact",
+                      ezConfidence: s.ezConfidence,
+                    }))
+                  )
+                }
               >
                 <Download className="mr-2 h-4 w-4" />
                 Export CSV
@@ -185,8 +193,8 @@ export default function DataPage() {
                         <TableCell className="text-center">
                           {scar.actualOct}
                         </TableCell>
-                        <TableCell className="text-center">
-                          {scar.ezIntact ? "Yes" : "No"}
+                        <TableCell className="text-center text-xs">
+                          {scar.ezStatus ?? "—"}
                         </TableCell>
                         <TableCell className="text-center">
                           <Badge variant={acc.variant} className="text-xs">

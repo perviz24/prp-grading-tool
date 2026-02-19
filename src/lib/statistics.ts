@@ -7,7 +7,7 @@ export interface ScarRecord {
   afGrade: number;
   revisedOct?: number;
   actualOct: number;
-  ezIntact: boolean;
+  ezStatus: string;
 }
 
 // Cross-tabulation: rows × columns → count matrix
@@ -235,16 +235,20 @@ export function weightedKappa(
   return { kappa, label };
 }
 
-// EZ intact by OCT grade
+// EZ status by OCT grade
 export function ezByOctGrade(data: ScarRecord[]) {
   const grades = [1, 2, 3, 4];
   return grades.map((grade) => {
     const subset = data.filter((d) => d.actualOct === grade);
-    const intact = subset.filter((d) => d.ezIntact).length;
+    const intact = subset.filter((d) => d.ezStatus === "Intact").length;
+    const disrupted = subset.filter((d) => d.ezStatus === "Disrupted").length;
+    const notVisible = subset.filter((d) => d.ezStatus === "Not visible").length;
     return {
       grade,
       total: subset.length,
       intact,
+      disrupted,
+      notVisible,
       intactPct: subset.length > 0 ? Math.round((intact / subset.length) * 100) : 0,
     };
   });

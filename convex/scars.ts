@@ -56,7 +56,12 @@ export const create = mutation({
     ),
     revisedOct: v.optional(v.number()),
     actualOct: v.number(),
-    ezIntact: v.boolean(),
+    ezStatus: v.union(
+      v.literal("Intact"),
+      v.literal("Disrupted"),
+      v.literal("Not visible")
+    ),
+    ezConfidence: v.union(v.literal("Low"), v.literal("Medium"), v.literal("High")),
     // Images — actual patient photos
     fundusImageId: v.optional(v.id("_storage")),
     afImageId: v.optional(v.id("_storage")),
@@ -163,7 +168,7 @@ export const listAllForInterRater = query({
           predictedOct: scar.predictedOct,
           afGrade: scar.afGrade,
           actualOct: scar.actualOct,
-          ezIntact: scar.ezIntact,
+          ezStatus: scar.ezStatus,
         };
       })
     );

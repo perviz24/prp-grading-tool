@@ -21,6 +21,7 @@ import {
   type Quadrant,
   type Zone,
   type Confidence,
+  type EZStatus,
 } from "@/lib/types";
 import type { Id } from "../../convex/_generated/dataModel";
 import {
@@ -87,7 +88,8 @@ export function GradingWizard({ patientId, scarCode, onComplete, isRegradeOf }: 
 
   // Step 5: Actual OCT
   const [actualOct, setActualOct] = useState<number>(0);
-  const [ezIntact, setEzIntact] = useState<boolean>(true);
+  const [ezStatus, setEzStatus] = useState<EZStatus>("Intact");
+  const [ezConfidence, setEzConfidence] = useState<Confidence>("Medium");
 
   // Images — actual patient photos
   const [fundusImageId, setFundusImageId] = useState<Id<"_storage"> | null>(null);
@@ -170,7 +172,8 @@ export function GradingWizard({ patientId, scarCode, onComplete, isRegradeOf }: 
         afConfidence,
         ...(revisedOct !== null ? { revisedOct } : {}),
         actualOct,
-        ezIntact,
+        ezStatus,
+        ezConfidence,
         ...(fundusImageId ? { fundusImageId } : {}),
         ...(afImageId ? { afImageId } : {}),
         ...(octImageId ? { octImageId } : {}),
@@ -325,8 +328,10 @@ export function GradingWizard({ patientId, scarCode, onComplete, isRegradeOf }: 
           <StepActualOct
             grade={actualOct}
             setGrade={setActualOct}
-            ezIntact={ezIntact}
-            setEzIntact={setEzIntact}
+            ezStatus={ezStatus}
+            setEzStatus={setEzStatus}
+            ezConfidence={ezConfidence}
+            setEzConfidence={setEzConfidence}
             imageId={octImageId}
             onImageUploaded={setOctImageId}
             onImageRemove={() => setOctImageId(null)}
@@ -340,7 +345,7 @@ export function GradingWizard({ patientId, scarCode, onComplete, isRegradeOf }: 
               scarCode, quadrant, zone,
               fundusGrade, fundusConfidence,
               predictedOct, afGrade, afConfidence,
-              revisedOct, actualOct, ezIntact,
+              revisedOct, actualOct, ezStatus, ezConfidence,
             }}
             comment={comment}
             setComment={setComment}

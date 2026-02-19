@@ -9,6 +9,7 @@ import {
   type Quadrant,
   type Zone,
   type Confidence,
+  type EZStatus,
   FUNDUS_GRADES,
   OCT_GRADES,
   AF_GRADES,
@@ -256,17 +257,25 @@ export function StepRevise({
 }
 
 export function StepActualOct({
-  grade, setGrade, ezIntact, setEzIntact,
+  grade, setGrade,
+  ezStatus, setEzStatus, ezConfidence, setEzConfidence,
   imageId, onImageUploaded, onImageRemove,
 }: {
   grade: number;
   setGrade: (n: number) => void;
-  ezIntact: boolean;
-  setEzIntact: (b: boolean) => void;
+  ezStatus: EZStatus;
+  setEzStatus: (s: EZStatus) => void;
+  ezConfidence: Confidence;
+  setEzConfidence: (c: Confidence) => void;
   imageId?: Id<"_storage"> | null;
   onImageUploaded: (id: Id<"_storage">) => void;
   onImageRemove: () => void;
 }) {
+  const ezOptions: { value: EZStatus; label: string }[] = [
+    { value: "Intact", label: "Intact" },
+    { value: "Disrupted", label: "Disrupted" },
+    { value: "Not visible", label: "Not visible to assess" },
+  ];
   return (
     <div className="space-y-4">
       <div>
@@ -286,22 +295,22 @@ export function StepActualOct({
         <p className="text-sm text-muted-foreground mb-3">
           Is the EZ line intact at the scar site?
         </p>
-        <div className="flex gap-2">
-          <Button
-            type="button"
-            variant={ezIntact ? "default" : "outline"}
-            onClick={() => setEzIntact(true)}
-          >
-            Intact
-          </Button>
-          <Button
-            type="button"
-            variant={!ezIntact ? "default" : "outline"}
-            onClick={() => setEzIntact(false)}
-          >
-            Disrupted
-          </Button>
+        <div className="flex flex-wrap gap-2">
+          {ezOptions.map((opt) => (
+            <Button
+              key={opt.value}
+              type="button"
+              variant={ezStatus === opt.value ? "default" : "outline"}
+              onClick={() => setEzStatus(opt.value)}
+            >
+              {opt.label}
+            </Button>
+          ))}
         </div>
+      </div>
+      <div className="space-y-2">
+        <Label>EZ Confidence</Label>
+        <ConfidenceSelector value={ezConfidence} onChange={setEzConfidence} />
       </div>
       <Separator />
       <ImagePasteUpload
@@ -332,7 +341,8 @@ export function StepConfirm({
     afConfidence: Confidence;
     revisedOct: number | null;
     actualOct: number;
-    ezIntact: boolean;
+    ezStatus: EZStatus;
+    ezConfidence: Confidence;
   };
   comment: string;
   setComment: (s: string) => void;
@@ -368,7 +378,7 @@ export function StepConfirm({
           label="Actual OCT"
           value={`Grade ${data.actualOct} (${OCT_GRADES[data.actualOct as keyof typeof OCT_GRADES]?.description})`}
         />
-        <SummaryItem label="EZ Line" value={data.ezIntact ? "Intact" : "Disrupted"} />
+        <SummaryItem label="EZ Line" value={`${data.ezStatus} — ${data.ezConfidence}`} />
         <SummaryItem
           label="Prediction Accuracy"
           value={accurate ? "Correct" : `Off by ${Math.abs(prediction - data.actualOct)} grade(s)`}

@@ -21,7 +21,7 @@ interface ScarEntry {
   predictedOct: number;
   afGrade: number;
   actualOct: number;
-  ezIntact: boolean;
+  ezStatus: string;
 }
 
 interface InterRaterStatsProps {

@@ -211,10 +211,10 @@ export function BasicStats({ data }: BasicStatsProps) {
         </Card>
       )}
 
-      {/* EZ intact by OCT grade */}
+      {/* EZ status by OCT grade */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">EZ Intact by OCT Grade</CardTitle>
+          <CardTitle className="text-lg">EZ Status by OCT Grade</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
@@ -222,8 +222,10 @@ export function BasicStats({ data }: BasicStatsProps) {
               <TableRow>
                 <TableHead>OCT Grade</TableHead>
                 <TableHead className="text-center">Total</TableHead>
-                <TableHead className="text-center">EZ Intact</TableHead>
-                <TableHead className="text-center">%</TableHead>
+                <TableHead className="text-center">Intact</TableHead>
+                <TableHead className="text-center">Disrupted</TableHead>
+                <TableHead className="text-center">Not visible</TableHead>
+                <TableHead className="text-center">% Intact</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -232,6 +234,8 @@ export function BasicStats({ data }: BasicStatsProps) {
                   <TableCell>Grade {row.grade}</TableCell>
                   <TableCell className="text-center">{row.total}</TableCell>
                   <TableCell className="text-center">{row.intact}</TableCell>
+                  <TableCell className="text-center">{row.disrupted}</TableCell>
+                  <TableCell className="text-center">{row.notVisible}</TableCell>
                   <TableCell className="text-center">
                     {row.total > 0 ? `${row.intactPct}%` : "—"}
                   </TableCell>

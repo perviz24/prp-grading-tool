@@ -7,6 +7,7 @@ export type LaserPattern = "Single" | "Pattern";
 export type Quadrant = "Superior" | "Inferior" | "Nasal" | "Temporal";
 export type Zone = "Central" | "Mid" | "Peripheral";
 export type Confidence = "Low" | "Medium" | "High";
+export type EZStatus = "Intact" | "Disrupted" | "Not visible";
 
 export interface PatientData {
   patientCode: string;
@@ -32,7 +33,8 @@ export interface ScarData {
   afConfidence?: Confidence;
   revisedOct?: number;
   actualOct: number;
-  ezIntact: boolean;
+  ezStatus: EZStatus;
+  ezConfidence: Confidence;
   comment?: string;
   stepTimestamps: StepTimestamps;
 }

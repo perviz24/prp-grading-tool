@@ -16,7 +16,7 @@ function toScarRecord(s: {
   afGrade: number;
   revisedOct?: number;
   actualOct: number;
-  ezIntact: boolean;
+  ezStatus: string;
 }): ScarRecord {
   return {
     fundusGrade: s.fundusGrade,
@@ -24,7 +24,7 @@ function toScarRecord(s: {
     afGrade: s.afGrade,
     revisedOct: s.revisedOct,
     actualOct: s.actualOct,
-    ezIntact: s.ezIntact,
+    ezStatus: s.ezStatus,
   };
 }
 
