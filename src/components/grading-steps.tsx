@@ -3,6 +3,8 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
+import { ImagePasteUpload } from "@/components/image-paste-upload";
+import { ReferenceImages } from "@/components/reference-images";
 import {
   type Quadrant,
   type Zone,
@@ -11,6 +13,7 @@ import {
   OCT_GRADES,
   AF_GRADES,
 } from "@/lib/types";
+import type { Id } from "../../convex/_generated/dataModel";
 
 // --- Reusable selectors ---
 
@@ -77,15 +80,45 @@ export function ConfidenceSelector({
   );
 }
 
+// --- Helper: Reference images for all grades in a modality ---
+
+function ReferenceImageGrid({
+  modality,
+  grades,
+}: {
+  modality: string;
+  grades: Record<number, { label: string; description: string }>;
+}) {
+  return (
+    <div className="space-y-1">
+      <Label className="text-sm">Reference Photos</Label>
+      <div className="grid gap-3 sm:grid-cols-2">
+        {Object.entries(grades).map(([num, grade]) => (
+          <ReferenceImages
+            key={num}
+            modality={modality}
+            gradeNumber={parseInt(num)}
+            gradeLabel={`${grade.label}: ${grade.description}`}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // --- Step components ---
 
 export function StepFundus({
   grade, setGrade, confidence, setConfidence,
+  imageId, onImageUploaded, onImageRemove,
 }: {
   grade: number;
   setGrade: (n: number) => void;
   confidence: Confidence;
   setConfidence: (c: Confidence) => void;
+  imageId?: Id<"_storage"> | null;
+  onImageUploaded: (id: Id<"_storage">) => void;
+  onImageRemove: () => void;
 }) {
   return (
     <div className="space-y-4">
@@ -102,6 +135,15 @@ export function StepFundus({
         <Label>Confidence</Label>
         <ConfidenceSelector value={confidence} onChange={setConfidence} />
       </div>
+      <Separator />
+      <ImagePasteUpload
+        label="Actual Fundus Photo"
+        onUploaded={onImageUploaded}
+        storageId={imageId}
+        onRemove={onImageRemove}
+      />
+      <Separator />
+      <ReferenceImageGrid modality="fundus" grades={FUNDUS_GRADES} />
     </div>
   );
 }
@@ -123,17 +165,23 @@ export function StepPredictOct({
         </p>
         <GradeSelector grades={OCT_GRADES} value={grade} onChange={setGrade} />
       </div>
+      <Separator />
+      <ReferenceImageGrid modality="oct" grades={OCT_GRADES} />
     </div>
   );
 }
 
 export function StepAF({
   grade, setGrade, confidence, setConfidence,
+  imageId, onImageUploaded, onImageRemove,
 }: {
   grade: number;
   setGrade: (n: number) => void;
   confidence: Confidence;
   setConfidence: (c: Confidence) => void;
+  imageId?: Id<"_storage"> | null;
+  onImageUploaded: (id: Id<"_storage">) => void;
+  onImageRemove: () => void;
 }) {
   return (
     <div className="space-y-4">
@@ -150,6 +198,15 @@ export function StepAF({
         <Label>Confidence</Label>
         <ConfidenceSelector value={confidence} onChange={setConfidence} />
       </div>
+      <Separator />
+      <ImagePasteUpload
+        label="Actual AF Photo"
+        onUploaded={onImageUploaded}
+        storageId={imageId}
+        onRemove={onImageRemove}
+      />
+      <Separator />
+      <ReferenceImageGrid modality="af" grades={AF_GRADES} />
     </div>
   );
 }
@@ -200,11 +257,15 @@ export function StepRevise({
 
 export function StepActualOct({
   grade, setGrade, ezIntact, setEzIntact,
+  imageId, onImageUploaded, onImageRemove,
 }: {
   grade: number;
   setGrade: (n: number) => void;
   ezIntact: boolean;
   setEzIntact: (b: boolean) => void;
+  imageId?: Id<"_storage"> | null;
+  onImageUploaded: (id: Id<"_storage">) => void;
+  onImageRemove: () => void;
 }) {
   return (
     <div className="space-y-4">
@@ -242,6 +303,15 @@ export function StepActualOct({
           </Button>
         </div>
       </div>
+      <Separator />
+      <ImagePasteUpload
+        label="Actual OCT Photo"
+        onUploaded={onImageUploaded}
+        storageId={imageId}
+        onRemove={onImageRemove}
+      />
+      <Separator />
+      <ReferenceImageGrid modality="oct" grades={OCT_GRADES} />
     </div>
   );
 }

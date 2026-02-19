@@ -89,6 +89,11 @@ export function GradingWizard({ patientId, scarCode, onComplete, isRegradeOf }: 
   const [actualOct, setActualOct] = useState<number>(0);
   const [ezIntact, setEzIntact] = useState<boolean>(true);
 
+  // Images — actual patient photos
+  const [fundusImageId, setFundusImageId] = useState<Id<"_storage"> | null>(null);
+  const [afImageId, setAfImageId] = useState<Id<"_storage"> | null>(null);
+  const [octImageId, setOctImageId] = useState<Id<"_storage"> | null>(null);
+
   // Step 6: Comment
   const [comment, setComment] = useState("");
 
@@ -166,6 +171,9 @@ export function GradingWizard({ patientId, scarCode, onComplete, isRegradeOf }: 
         ...(revisedOct !== null ? { revisedOct } : {}),
         actualOct,
         ezIntact,
+        ...(fundusImageId ? { fundusImageId } : {}),
+        ...(afImageId ? { afImageId } : {}),
+        ...(octImageId ? { octImageId } : {}),
         ...(comment ? { comment } : {}),
         stepTimestamps: finalTimestamps,
         ...(isRegradeOf ? { isRegradeOf } : {}),
@@ -279,6 +287,9 @@ export function GradingWizard({ patientId, scarCode, onComplete, isRegradeOf }: 
             setGrade={setFundusGrade}
             confidence={fundusConfidence}
             setConfidence={setFundusConfidence}
+            imageId={fundusImageId}
+            onImageUploaded={setFundusImageId}
+            onImageRemove={() => setFundusImageId(null)}
           />
         )}
 
@@ -294,6 +305,9 @@ export function GradingWizard({ patientId, scarCode, onComplete, isRegradeOf }: 
             setGrade={setAfGrade}
             confidence={afConfidence}
             setConfidence={setAfConfidence}
+            imageId={afImageId}
+            onImageUploaded={setAfImageId}
+            onImageRemove={() => setAfImageId(null)}
           />
         )}
 
@@ -313,6 +327,9 @@ export function GradingWizard({ patientId, scarCode, onComplete, isRegradeOf }: 
             setGrade={setActualOct}
             ezIntact={ezIntact}
             setEzIntact={setEzIntact}
+            imageId={octImageId}
+            onImageUploaded={setOctImageId}
+            onImageRemove={() => setOctImageId(null)}
           />
         )}
 

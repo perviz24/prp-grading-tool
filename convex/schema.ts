@@ -84,4 +84,15 @@ export default defineSchema({
     .index("by_user", ["userId"])
     .index("by_patient", ["patientId"])
     .index("by_grader", ["graderId"]),
+
+  // Reference images — example photos for each grade level
+  referenceImages: defineTable({
+    userId: v.string(),
+    // "fundus" | "oct" | "af"
+    modality: v.string(),
+    // Grade number (1–4)
+    gradeNumber: v.number(),
+    imageId: v.id("_storage"),
+    createdAt: v.number(),
+  }).index("by_modality", ["modality", "gradeNumber"]),
 });
