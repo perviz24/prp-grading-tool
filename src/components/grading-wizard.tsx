@@ -45,6 +45,7 @@ interface GradingWizardProps {
   patientId: Id<"patients">;
   scarCode: string;
   onComplete: () => void;
+  isRegradeOf?: Id<"scars">;
 }
 
 interface Timestamps {
@@ -61,7 +62,7 @@ interface Timestamps {
   confirmEnd?: number;
 }
 
-export function GradingWizard({ patientId, scarCode, onComplete }: GradingWizardProps) {
+export function GradingWizard({ patientId, scarCode, onComplete, isRegradeOf }: GradingWizardProps) {
   const createScar = useMutation(api.scars.create);
   const [step, setStep] = useState(0);
   const [saving, setSaving] = useState(false);
@@ -167,8 +168,13 @@ export function GradingWizard({ patientId, scarCode, onComplete }: GradingWizard
         ezIntact,
         ...(comment ? { comment } : {}),
         stepTimestamps: finalTimestamps,
+        ...(isRegradeOf ? { isRegradeOf } : {}),
       });
-      toast.success(`Scar ${scarCode} graded and saved`);
+      toast.success(
+        isRegradeOf
+          ? `Re-grade of ${scarCode} saved`
+          : `Scar ${scarCode} graded and saved`
+      );
       onComplete();
     } catch {
       toast.error("Failed to save scar. Are you signed in?");
@@ -186,8 +192,13 @@ export function GradingWizard({ patientId, scarCode, onComplete }: GradingWizard
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-3">
-          Grade Scar
+          {isRegradeOf ? "Re-grade Scar" : "Grade Scar"}
           <Badge variant="secondary">{scarCode}</Badge>
+          {isRegradeOf && (
+            <Badge variant="outline" className="text-amber-600">
+              Intra-rater
+            </Badge>
+          )}
         </CardTitle>
 
         {/* Step indicator */}

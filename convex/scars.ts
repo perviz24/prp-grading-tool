@@ -167,6 +167,87 @@ export const listAllForInterRater = query({
   },
 });
 
+// Intra-rater: list eligible scars for re-grading
+// Original scars by this user, graded 14+ days ago, not already re-graded
+export const listEligibleForRegrade = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return [];
+    const userId = identity.subject;
+    const allScars = await ctx.db
+      .query("scars")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .collect();
+    // Find originals (not re-grades themselves)
+    const originals = allScars.filter((s) => !s.isRegradeOf);
+    // Find which originals have already been re-graded
+    const regradeTargets = new Set(
+      allScars.filter((s) => s.isRegradeOf).map((s) => s.isRegradeOf)
+    );
+    const twoWeeksAgo = Date.now() - 14 * 24 * 60 * 60 * 1000;
+    const eligible = originals.filter(
+      (s) => s.createdAt < twoWeeksAgo && !regradeTargets.has(s._id)
+    );
+    // Join with patient data
+    const results = await Promise.all(
+      eligible.map(async (scar) => {
+        const patient = await ctx.db.get(scar.patientId);
+        return {
+          _id: scar._id,
+          scarCode: scar.scarCode,
+          patientId: scar.patientId,
+          patientCode: patient?.patientCode ?? "Unknown",
+          quadrant: scar.quadrant,
+          zone: scar.zone,
+          createdAt: scar.createdAt,
+        };
+      })
+    );
+    return results;
+  },
+});
+
+// Intra-rater: list re-grade pairs (original + re-grade) for this user
+export const listRegradePairs = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return [];
+    const userId = identity.subject;
+    const allScars = await ctx.db
+      .query("scars")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .collect();
+    const regrades = allScars.filter((s) => s.isRegradeOf);
+    const pairs = await Promise.all(
+      regrades.map(async (regrade) => {
+        const original = await ctx.db.get(regrade.isRegradeOf!);
+        const patient = await ctx.db.get(regrade.patientId);
+        return {
+          scarCode: regrade.scarCode,
+          patientCode: patient?.patientCode ?? "Unknown",
+          original: original
+            ? {
+                fundusGrade: original.fundusGrade,
+                predictedOct: original.predictedOct,
+                afGrade: original.afGrade,
+                actualOct: original.actualOct,
+              }
+            : null,
+          regrade: {
+            fundusGrade: regrade.fundusGrade,
+            predictedOct: regrade.predictedOct,
+            afGrade: regrade.afGrade,
+            actualOct: regrade.actualOct,
+          },
+        };
+      })
+    );
+    return pairs.filter((p) => p.original !== null);
+  },
+});
+
 export const nextScarCode = query({
   args: { patientId: v.id("patients") },
   handler: async (ctx, { patientId }) => {

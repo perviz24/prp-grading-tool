@@ -13,6 +13,7 @@ const navItems = [
   { href: "/data", label: "Data" },
   { href: "/statistics", label: "Statistics" },
   { href: "/inter-rater", label: "Inter-Rater" },
+  { href: "/re-grade", label: "Re-grade" },
 ];
 
 function NavLink({
