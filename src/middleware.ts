@@ -5,6 +5,9 @@ const isProtectedRoute = createRouteMatcher([
   "/grade(.*)",
   "/data(.*)",
   "/statistics(.*)",
+  "/inter-rater(.*)",
+  "/re-grade(.*)",
+  "/references(.*)",
 ]);
 
 // Skip Clerk middleware if keys are not configured yet

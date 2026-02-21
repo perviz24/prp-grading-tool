@@ -73,7 +73,7 @@ export function AdvancedStats({ data, groupedData }: AdvancedStatsProps) {
   const wilcoxonRevVsActual =
     revisedData.length >= 5
       ? wilcoxonSignedRank(
-          revisedData.map((d) => d.revisedOct!),
+          revisedData.map((d) => d.revisedOct ?? d.predictedOct),
           revisedData.map((d) => d.actualOct)
         )
       : null;
@@ -82,7 +82,7 @@ export function AdvancedStats({ data, groupedData }: AdvancedStatsProps) {
   const rhoRevisedOct =
     revisedData.length >= 3
       ? spearmanRho(
-          revisedData.map((d) => d.revisedOct!),
+          revisedData.map((d) => d.revisedOct ?? d.predictedOct),
           revisedData.map((d) => d.actualOct)
         )
       : null;

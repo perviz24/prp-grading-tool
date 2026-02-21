@@ -7,30 +7,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import {
-  type LaserGroup,
-  type LaserApparatus,
-  type LaserPattern,
-  getTimeCategory,
+  type LaserGroup, type LaserApparatus, type LaserPattern, getTimeCategory,
 } from "@/lib/types";
 import type { Id } from "../../convex/_generated/dataModel";
+import { LaserParamsForm } from "@/components/laser-params-form";
 
 interface PatientEditDialogProps {
   open: boolean;
@@ -51,10 +40,7 @@ interface PatientEditDialogProps {
 }
 
 export function PatientEditDialog({
-  open,
-  onOpenChange,
-  patientId,
-  patient,
+  open, onOpenChange, patientId, patient,
 }: PatientEditDialogProps) {
   const updatePatient = useMutation(api.patients.update);
 
@@ -69,7 +55,6 @@ export function PatientEditDialog({
   const [timeSince, setTimeSince] = useState("");
   const [saving, setSaving] = useState(false);
 
-  // Pre-fill form when dialog opens or patient data changes
   useEffect(() => {
     if (open) {
       setLaserGroup((patient.laserGroup as LaserGroup) ?? "");
@@ -86,11 +71,8 @@ export function PatientEditDialog({
 
   function handleGroupChange(group: LaserGroup | "") {
     setLaserGroup(group);
-    if (group === "A-Modern" && !laserApparatus) {
-      setLaserApparatus("Valon");
-    } else if (group === "B-Konventionell" && !laserApparatus) {
-      setLaserApparatus("Argon");
-    }
+    if (group === "A-Modern" && !laserApparatus) setLaserApparatus("Valon");
+    else if (group === "B-Konventionell" && !laserApparatus) setLaserApparatus("Argon");
   }
 
   async function handleSave() {
@@ -99,15 +81,12 @@ export function PatientEditDialog({
       toast.error("Invalid time value");
       return;
     }
-
     setSaving(true);
     try {
       await updatePatient({
         patientId,
         ...(laserGroup ? { laserGroup: laserGroup as LaserGroup } : {}),
-        ...(laserApparatus
-          ? { laserApparatus: laserApparatus as LaserApparatus }
-          : {}),
+        ...(laserApparatus ? { laserApparatus: laserApparatus as LaserApparatus } : {}),
         ...(pattern ? { pattern: pattern as LaserPattern } : {}),
         ...(years !== undefined ? { timeSinceTreatmentYears: years } : {}),
         ...(power ? { power_mW: parseFloat(power) } : {}),
@@ -136,46 +115,27 @@ export function PatientEditDialog({
         <DialogHeader>
           <DialogTitle>
             Edit Patient{" "}
-            <Badge variant="secondary" className="ml-2">
-              {patient.patientCode}
-            </Badge>
+            <Badge variant="secondary" className="ml-2">{patient.patientCode}</Badge>
           </DialogTitle>
-          <DialogDescription>
-            Update laser parameters and treatment details.
-          </DialogDescription>
+          <DialogDescription>Update laser parameters and treatment details.</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-5">
-          {/* Laser Group & Apparatus */}
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label>Laser Group</Label>
-              <Select
-                value={laserGroup || undefined}
-                onValueChange={handleGroupChange}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select group..." />
-                </SelectTrigger>
+              <Select value={laserGroup || undefined} onValueChange={handleGroupChange}>
+                <SelectTrigger><SelectValue placeholder="Select group..." /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="A-Modern">A — Modern</SelectItem>
-                  <SelectItem value="B-Konventionell">
-                    B — Konventionell
-                  </SelectItem>
+                  <SelectItem value="B-Konventionell">B — Konventionell</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-2">
               <Label>Laser Apparatus</Label>
-              <Select
-                value={laserApparatus || undefined}
-                onValueChange={(v) =>
-                  setLaserApparatus(v as LaserApparatus)
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select apparatus..." />
-                </SelectTrigger>
+              <Select value={laserApparatus || undefined} onValueChange={(v) => setLaserApparatus(v as LaserApparatus)}>
+                <SelectTrigger><SelectValue placeholder="Select apparatus..." /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Valon">Valon</SelectItem>
                   <SelectItem value="Navilas">Navilas</SelectItem>
@@ -188,105 +148,29 @@ export function PatientEditDialog({
 
           <Separator />
 
-          {/* Laser Parameters */}
-          <div>
-            <Label className="text-sm font-medium text-muted-foreground">
-              Laser Parameters
-            </Label>
-            <div className="mt-3 grid gap-4 sm:grid-cols-3">
-              <div className="space-y-2">
-                <Label htmlFor="edit-power">Power (mW)</Label>
-                <Input
-                  id="edit-power"
-                  type="number"
-                  placeholder="e.g. 200"
-                  value={power}
-                  onChange={(e) => setPower(e.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="edit-spotSize">Spot Size (μm)</Label>
-                <Input
-                  id="edit-spotSize"
-                  type="number"
-                  placeholder="e.g. 400"
-                  value={spotSize}
-                  onChange={(e) => setSpotSize(e.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="edit-duration">Duration (ms)</Label>
-                <Input
-                  id="edit-duration"
-                  type="number"
-                  placeholder="e.g. 100"
-                  value={duration}
-                  onChange={(e) => setDuration(e.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="edit-wavelength">Wavelength (nm)</Label>
-                <Input
-                  id="edit-wavelength"
-                  type="number"
-                  placeholder="e.g. 532"
-                  value={wavelength}
-                  onChange={(e) => setWavelength(e.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Pattern</Label>
-                <Select
-                  value={pattern || undefined}
-                  onValueChange={(v) => setPattern(v as LaserPattern)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Single">Single</SelectItem>
-                    <SelectItem value="Pattern">Pattern</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="edit-numBurns">Number of Burns</Label>
-                <Input
-                  id="edit-numBurns"
-                  type="number"
-                  placeholder="e.g. 1500"
-                  value={numBurns}
-                  onChange={(e) => setNumBurns(e.target.value)}
-                />
-              </div>
-            </div>
-          </div>
+          <LaserParamsForm
+            power={power} setPower={setPower}
+            spotSize={spotSize} setSpotSize={setSpotSize}
+            duration={duration} setDuration={setDuration}
+            wavelength={wavelength} setWavelength={setWavelength}
+            pattern={pattern} setPattern={setPattern}
+            numBurns={numBurns} setNumBurns={setNumBurns}
+          />
 
           <Separator />
 
-          {/* Time Since Treatment */}
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="edit-timeSince">
-                Time Since Treatment (years)
-              </Label>
+              <Label htmlFor="edit-timeSince">Time Since Treatment (years)</Label>
               <Input
-                id="edit-timeSince"
-                type="number"
-                step="0.5"
-                min="0"
-                placeholder="e.g. 5"
-                value={timeSince}
+                id="edit-timeSince" type="number" step="0.5" min="0"
+                placeholder="e.g. 5" value={timeSince}
                 onChange={(e) => setTimeSince(e.target.value)}
               />
             </div>
             <div className="flex items-end">
               {timeCategory && (
-                <Badge
-                  variant={
-                    timeCategory === "Recent ≤2yr" ? "default" : "secondary"
-                  }
-                >
+                <Badge variant={timeCategory === "Recent ≤2yr" ? "default" : "secondary"}>
                   {timeCategory}
                 </Badge>
               )}
@@ -295,13 +179,7 @@ export function PatientEditDialog({
         </div>
 
         <DialogFooter>
-          <Button
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-            disabled={saving}
-          >
-            Cancel
-          </Button>
+          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={saving}>Cancel</Button>
           <Button onClick={handleSave} disabled={saving}>
             {saving ? "Saving..." : "Save Changes"}
           </Button>

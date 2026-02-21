@@ -4,9 +4,10 @@ import { ReactNode } from "react";
 import { ConvexReactClient } from "convex/react";
 import { ConvexProviderWithClerk } from "convex/react-clerk";
 import { ClerkProvider, useAuth } from "@clerk/nextjs";
+import { env } from "@/lib/env";
 
-const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
-const clerkKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+const convexUrl = env.NEXT_PUBLIC_CONVEX_URL;
+const clerkKey = env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
 const convex = convexUrl ? new ConvexReactClient(convexUrl) : null;
 

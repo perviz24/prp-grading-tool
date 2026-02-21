@@ -5,6 +5,7 @@ import { useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { ImagePlus, X, Clipboard, Upload } from "lucide-react";
+import { toast } from "sonner";
 import type { Id } from "../../convex/_generated/dataModel";
 
 interface ImagePasteUploadProps {
@@ -49,7 +50,7 @@ export function ImagePasteUpload({
         reader.onload = (e) => setPreview(e.target?.result as string);
         reader.readAsDataURL(file);
       } catch (err) {
-        console.error("Upload failed:", err);
+        toast.error("Upload failed. Please try again.");
       } finally {
         setUploading(false);
       }

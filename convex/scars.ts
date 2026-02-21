@@ -229,10 +229,13 @@ export const listRegradePairs = query({
       .query("scars")
       .withIndex("by_user", (q) => q.eq("userId", userId))
       .collect();
-    const regrades = allScars.filter((s) => s.isRegradeOf);
+    const regrades = allScars.filter(
+      (s): s is typeof s & { isRegradeOf: NonNullable<typeof s.isRegradeOf> } =>
+        !!s.isRegradeOf
+    );
     const pairs = await Promise.all(
       regrades.map(async (regrade) => {
-        const original = await ctx.db.get(regrade.isRegradeOf!);
+        const original = await ctx.db.get(regrade.isRegradeOf);
         const patient = await ctx.db.get(regrade.patientId);
         return {
           scarCode: regrade.scarCode,
